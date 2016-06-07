@@ -9,34 +9,49 @@
 import SpriteKit
 
 class GameScene: SKScene {
+    
+    var familyIdx : Int  = 0
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    override init(size: CGSize) {
+        super.init(size: size)
+        showCurrentFamily()
+    }
+    
+    func showCurrentFamily()  {
+        //
+        removeAllChildren()
+        
+        let familyName = UIFont.familyNames()[familyIdx]
+        print("Family : \(familyName)")
+        
+        let fontNames  = UIFont.fontNamesForFamilyName(familyName)
+        
+        for (idx, fontName) in fontNames.enumerate() {
+            let label = SKLabelNode(fontNamed: fontName)
+            label.text = fontName
+            label.position = CGPoint(x: size.width/2, y: (size.height * (CGFloat(idx + 1)))/(CGFloat(fontNames.count)+1))
+            label.fontSize = 50
+            label.verticalAlignmentMode = .Center
+            addChild(label)
+        }
+    }
+    
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
-        let myLabel = SKLabelNode(fontNamed:"Chalkduster")
-        myLabel.text = "Hello, World!"
-        myLabel.fontSize = 45
-        myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame))
-        
-        self.addChild(myLabel)
+      
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
        /* Called when a touch begins */
-        
-        for touch in touches {
-            let location = touch.locationInNode(self)
-            
-            let sprite = SKSpriteNode(imageNamed:"Spaceship")
-            
-            sprite.xScale = 0.5
-            sprite.yScale = 0.5
-            sprite.position = location
-            
-            let action = SKAction.rotateByAngle(CGFloat(M_PI), duration:1)
-            
-            sprite.runAction(SKAction.repeatActionForever(action))
-            
-            self.addChild(sprite)
+        familyIdx = familyIdx + 1
+        if familyIdx >= UIFont.familyNames().count {
+            familyIdx = 0
         }
+        showCurrentFamily()
     }
    
     override func update(currentTime: CFTimeInterval) {
